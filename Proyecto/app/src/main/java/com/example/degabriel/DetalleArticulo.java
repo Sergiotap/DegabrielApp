@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DetalleArticulo extends AppCompatActivity  implements detalleArticuloAdapter.onItemClickListener{
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -46,6 +47,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
     private detalleArticuloAdapter adapter;
     private List<String> Imagenes= new ArrayList<>();
     private ArrayList<String> cesta, reservas;
+    private String ID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +69,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
 
 
 
-        String ID=getIntent().getStringExtra("ID");
+        ID=getIntent().getStringExtra("ID");
         readDataFromFirestore(ID);
 
 
@@ -125,7 +127,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                                 String name =(String)data.get("Nombre");
                                 String descrip =(String)data.get("Descripcion");
                                 Long precio = (Long) data.get("Precio");
-                                Long stock = (Long) data.get("Stock");
+                                long stock = (Long) data.get("Stock");
 
 
                                 detalleNombre.setText(name);
@@ -244,11 +246,23 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
         String IDBolso=getIntent().getStringExtra("ID");
         actualizarCesta(IDUsuario, IDBolso);
     }
-    public void reservar(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        String IDUsuario=user.getUid();
-        String IDBolso=getIntent().getStringExtra("ID");
-        actualizarBolsos(IDUsuario, IDBolso);
+    public void reservar() {
+        ID = getIntent().getStringExtra("ID");
+        obtenerStock(ID, new StockCallback() {
+            @Override
+            public void onStockObtained(AtomicReference<Long> stock) {
+                Long stockValue = stock.get(); // Obtener el valor actual del AtomicReference
+
+                if (stockValue != null && stockValue > 0) {
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String IDUsuario = user.getUid();
+                    String IDBolso = getIntent().getStringExtra("ID");
+                    actualizarBolsos(IDUsuario, IDBolso);
+                } else {
+                    Toast.makeText(getApplicationContext(), "No hay stock suficiente de este bolso", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
     public void actualizarCesta(String IDUsuario, String IDBolso){
         db.collection("Usuarios").document(IDUsuario)
@@ -362,6 +376,28 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
         Intent intent = new Intent(this, Carrito.class);
         launcher.launch(intent);
         finish();
+    }
+    public void obtenerStock(String IDBolso, StockCallback callback) {
+        AtomicReference<Long> stockRecibido = new AtomicReference<>();
+        db.collection("Bolsos").document(IDBolso)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Long stock = (Long) documentSnapshot.get("Stock");
+                        stockRecibido.set(stock);
+                    } else {
+                        // El documento no existe
+                    }
+                    callback.onStockObtained(stockRecibido);
+                })
+                .addOnFailureListener(e -> {
+                    // Error al obtener el documento
+                    callback.onStockObtained(stockRecibido);
+                });
+    }
+
+    public interface StockCallback {
+        void onStockObtained(AtomicReference<Long> stock);
     }
 
 }

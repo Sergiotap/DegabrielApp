@@ -134,6 +134,8 @@ public class Registro extends AppCompatActivity {
         userData.put("Telefono", "");
         userData.put("Bolsos", new ArrayList<>());
         userData.put("Cesta", new ArrayList<>());
+        boolean suscrito = unirse.isChecked();
+        userData.put("Suscrito", suscrito);
         db.collection("Usuarios").document(uid)
                 .set(userData)
                 .addOnSuccessListener(documentReference -> {

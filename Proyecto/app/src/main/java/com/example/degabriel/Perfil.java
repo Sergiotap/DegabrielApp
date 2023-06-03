@@ -31,6 +31,7 @@ public class Perfil extends AppCompatActivity {
     private ImageView perfilMenu,perfilCart,perfilPerfil;
     Button guardar;
     TextView cerrarSesion;
+    boolean suscrito;
     ArrayList<String> bolsos, cesta;
 
     @Override
@@ -109,6 +110,7 @@ public class Perfil extends AppCompatActivity {
                         String apellidosObtenido=documentSnapshot.getString("Apellidos");
                         String direccionObtenido=documentSnapshot.getString("Direccion");
                         String telefonoObtenido=documentSnapshot.getString("Telefono");
+                        suscrito= (boolean) documentSnapshot.get("Suscrito");
                         bolsos = (ArrayList<String>) documentSnapshot.get("Bolsos");
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                         nombre.setText(nombreObtenido);
@@ -135,6 +137,7 @@ public class Perfil extends AppCompatActivity {
         userData.put("Correo", correo.getText().toString());
         userData.put("Bolsos", bolsos);
         userData.put("Cesta", cesta);
+        userData.put("Suscrito", suscrito);
         db.collection("Usuarios").document(uid)
                 .set(userData)
                 .addOnSuccessListener(documentReference -> {
