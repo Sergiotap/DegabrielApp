@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "194881330471",
+    "project_id": "degabriel-app",
+    "storage_bucket": "degabriel-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194881330471:android:6a5584833929f567a5dd02",
+        "android_client_info": {
+          "package_name": "com.example.degabriel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "194881330471-eb541f9r81gq9m01q0ikotgsgkbr8bcs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.degabriel",
+            "certificate_hash": "d7a2bc3f284ad2928ff829652b8063805d53e4c8"
+          }
+        },
+        {
+          "client_id": "194881330471-mi3qn79g5eqgl2peimbchq9lsc2ef1td.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBotuJWR19zarzPZo02_oCU8ajR_8R9rqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "194881330471-mi3qn79g5eqgl2peimbchq9lsc2ef1td.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
