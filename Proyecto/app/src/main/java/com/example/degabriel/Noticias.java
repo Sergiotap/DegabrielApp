@@ -27,7 +27,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +42,13 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
     private ImageView noticiaMenu,noticiaCart,noticiaPerfil;
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> launcher;
-    private List<Map<String, Object>> dataList= new ArrayList<>();;
+    private List<Map<String, Object>> datoLista = new ArrayList<>();;
     private List<String> http = new ArrayList<>();
+    private List<String> dateStrings = new ArrayList<>();
+
+
+    private Map<String, Object> data;
+    private Date date;
     private noticiasAdapter adapter;
     private RecyclerView recy;
     @Override
@@ -53,7 +63,7 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
         recy.setLayoutManager(new LinearLayoutManager(this));
 
 
-        adapter = new noticiasAdapter(dataList);
+        adapter = new noticiasAdapter(datoLista);
         recy.setAdapter(adapter);
 
         adapter.setOnItemClickListener(this);
@@ -104,19 +114,59 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 // 处理每个文档的数据
                                 documentId .add(document.getId());
-                                Map<String, Object> data = document.getData();
+                                data = document.getData();
 
                                 http.add((String)data.get("url"));
 
+                                dateStrings.add((String) data.get("Fecha"));
+
                                 // 添加数据到列表
-                                dataList.add(data);
+                                datoLista.add(data);
 
                             }
 
-                            // 更新UI显示适配器的数据
+                            List<DataObject> dataList = new ArrayList<>();
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+
+                            for (int i = 0; i < dateStrings.size(); i++) {
+                                try {
+                                    date = sdf.parse(dateStrings.get(i));
+                                    DataObject dataObject = new DataObject(date, documentId.get(i), http.get(i),datoLista.get(i));
+                                    dataList.add(dataObject);
+
+                                    Log.d(TAG, "Data added to dataList: " + dataObject.getData());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                    Log.e(TAG, "Exception caught: " + e.getMessage());
+                                }
+                            }
+
+                            // 使用Comparator对自定义对象列表进行排序
+                            Collections.sort(dataList, new Comparator<DataObject>() {
+                                @Override
+                                public int compare(DataObject dataObject1, DataObject dataObject2) {
+                                    return dataObject1.getDate().compareTo(dataObject2.getDate());
+                                }
+                            });
+                            datoLista.clear();
+                            // 更新排序后的数据到原始数组
+                            for (int i = 0; i < dataList.size(); i++) {
+                                DataObject dataObject = dataList.get(i);
+                                dateStrings.set(i, sdf.format(dataObject.getDate()));
+                                documentId.set(i, dataObject.getId());
+                                http.set(i, dataObject.getImage());
+                                datoLista.add(dataObject.getData());
+                            }
                             adapter.notifyDataSetChanged();
+
+                            Log.d(TAG, "datoLista size: " + datoLista.size());
+                            Log.d(TAG, "Data added to datoLista: " + data.toString());
+                            //Toast.makeText(Noticias.this, " aa " +dataList.get(0).getDateString(), Toast.LENGTH_SHORT).show();
+                            // 更新UI显示适配器的数据
+                            // adapter.notifyDataSetChanged();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            Log.d(TAG, "datoLista size: " + datoLista.size());
                             Toast.makeText(Noticias.this, "error", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -166,5 +216,41 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
         launcher.launch(intent);
         finish();
     }
+    private static class DataObject {
+        private Date date;
+        private String id;
+        private String image;
 
+        private Map<String, Object> data;
+        public DataObject(Date date, String id, String image,Map<String, Object> data) {
+            this.date = date;
+            this.id = id;
+            this.image = image;
+            this.data =data;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getImage() {
+            return image;
+        }
+
+        public Map<String, Object> getData() {
+            return data;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+        public String getDateString() {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            return sdf.format(date);
+        }
+    }
 }
