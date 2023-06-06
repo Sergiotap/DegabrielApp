@@ -76,9 +76,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                 });
 
         carritoMenu.setOnClickListener(view -> {
-            Intent intent = new Intent(Carrito.this, Menu.class);
-            startActivity(intent);
-            finish();
+            irAMenu();
         });
 
         carritoCart.setOnClickListener(view -> {
@@ -144,20 +142,24 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
             irALogin();
         }
     }
-    public void irAPerfil(){
-        Intent intent = new Intent(this, Perfil.class);
-        launcher.launch(intent);
-        //finish();
-    }
     public void irALogin(){
         Intent intent = new Intent(this, Login.class);
         launcher.launch(intent);
-        finish();
+    }
+    public void irAPerfil(){
+        Intent intent = new Intent(this, Perfil.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     public void irACarro(){
         Intent intent = new Intent(this, Carrito.class);
-        launcher.launch(intent);
-        finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+    public void irAMenu(){
+        Intent intent = new Intent(this, Menu.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     public void sacarBolsos(String uid){
         db.collection("Usuarios").document(uid)

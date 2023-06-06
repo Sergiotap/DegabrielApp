@@ -160,7 +160,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
             String name = (String) itemData.get("Nombre");
             carritoModelo.setText(name);
             Long precio = (long) itemData.get("Precio");
-            carritoPrecio.setText(precio.toString());
+            carritoPrecio.setText(precio.toString()+" €");
             List<String> imageUrls = (List<String>) itemData.get("Imagen");
             if (imageUrls != null && imageUrls.size() > 0) {
                 // Obtenga la URL de la primera imagen del arreglo

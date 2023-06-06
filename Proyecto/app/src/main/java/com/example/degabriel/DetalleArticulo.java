@@ -101,9 +101,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
         });
 
         detalleMenu.setOnClickListener(view -> {
-            Intent intent = new Intent(DetalleArticulo.this, Menu.class);
-            startActivity(intent);
-            finish();
+            irAMenu();
         });
 
         detalleCart.setOnClickListener(view -> {
@@ -132,7 +130,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
 
                                 detalleNombre.setText(name);
                                 detalledescrpcion.setText(descrip);
-                                detalleprecio.setText(""+precio);
+                                detalleprecio.setText(""+precio+" €");
                                 detalleStock.setText(""+stock);
 
                                 List<String> imageUrls = (List<String>) data.get("Imagen");
@@ -233,12 +231,6 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                     // Error al obtener el documento
                 });
         return future;
-    }
-
-    public void irALogin(){
-        Intent intent = new Intent(this, Login.class);
-        launcher.launch(intent);
-        finish();
     }
     public void anadirACesta(){
         obtenerStock(ID, new StockCallback() {
@@ -381,15 +373,24 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
             irALogin();
         }
     }
+    public void irALogin(){
+        Intent intent = new Intent(this, Login.class);
+        launcher.launch(intent);
+    }
     public void irAPerfil(){
         Intent intent = new Intent(this, Perfil.class);
-        launcher.launch(intent);
-        //finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     public void irACarro(){
         Intent intent = new Intent(this, Carrito.class);
-        launcher.launch(intent);
-        finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+    public void irAMenu(){
+        Intent intent = new Intent(this, Menu.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     public void obtenerStock(String IDBolso, StockCallback callback) {
         AtomicReference<Long> stockRecibido = new AtomicReference<>();

@@ -90,9 +90,7 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
                 });
 
         noticiaMenu.setOnClickListener(view -> {
-            Intent intent = new Intent(Noticias.this, Menu.class);
-            startActivity(intent);
-            finish();
+            irAMenu();
         });
 
         noticiaCart.setOnClickListener(view -> {
@@ -201,20 +199,24 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
             irALogin();
         }
     }
-    public void irAPerfil(){
-        Intent intent = new Intent(this, Perfil.class);
-        launcher.launch(intent);
-        //finish();
-    }
     public void irALogin(){
         Intent intent = new Intent(this, Login.class);
         launcher.launch(intent);
-        finish();
+    }
+    public void irAPerfil(){
+        Intent intent = new Intent(this, Perfil.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     public void irACarro(){
         Intent intent = new Intent(this, Carrito.class);
-        launcher.launch(intent);
-        finish();
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+    public void irAMenu(){
+        Intent intent = new Intent(this, Menu.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
     private static class DataObject {
         private Date date;

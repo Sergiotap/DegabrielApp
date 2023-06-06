@@ -50,15 +50,11 @@ public class Menu extends AppCompatActivity {
                             // Realiza las acciones necesarias
                         }*/
                         //Esto si va a una actividad
-                        Toast.makeText(Menu.this, "He vuelto", Toast.LENGTH_SHORT).show();
-
                     }
                 });
 
         menuMenu.setOnClickListener(view -> {
-            Intent intent = new Intent(Menu.this, Menu.class);
-            startActivity(intent);
-            finish();
+            irAMenu();
         });
 
         menuCart.setOnClickListener(view -> {
@@ -70,21 +66,15 @@ public class Menu extends AppCompatActivity {
         });
 
         noticias.setOnClickListener(view -> {
-            Intent intent = new Intent(Menu.this, Noticias.class);
-            startActivity(intent);
-            finish();
+            irANoticias();
         });
 
         catalogo.setOnClickListener(view -> {
-            Intent intent = new Intent(Menu.this, Catalogo.class);
-            startActivity(intent);
-            finish();
+            irACatalogo();
         });
 
         expression.setOnClickListener(view -> {
-            Intent intent = new Intent(Menu.this, Expression.class);
-            startActivity(intent);
-            finish();
+            irAExpression();
         });
 
         manfiesto.setOnClickListener(view -> {
@@ -113,20 +103,37 @@ public class Menu extends AppCompatActivity {
             irALogin();
         }
     }
-    public void irAPerfil(){
-        Intent intent = new Intent(this, Perfil.class);
-        launcher.launch(intent);
-        //finish();
-    }
     public void irALogin(){
         Intent intent = new Intent(this, Login.class);
         launcher.launch(intent);
-        finish();
+    }
+    public void irAPerfil(){
+        Intent intent = new Intent(this, Perfil.class);
+        launcher.launch(intent);
     }
     public void irACarro(){
         Intent intent = new Intent(this, Carrito.class);
         launcher.launch(intent);
+    }
+    public void irAMenu(){
+        Intent intent = new Intent(Menu.this, Menu.class);
+        startActivity(intent);
         finish();
+    }
+    public void irANoticias(){
+        Intent intent = new Intent(Menu.this, Noticias.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+    public void irACatalogo(){
+        Intent intent = new Intent(Menu.this, Catalogo.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
+    public void irAExpression(){
+        Intent intent = new Intent(Menu.this, Expression.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
 }
