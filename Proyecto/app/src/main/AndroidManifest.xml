@@ -72,13 +72,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".NoticiaLista"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".Noticias"
             android:exported="false">
             <meta-data

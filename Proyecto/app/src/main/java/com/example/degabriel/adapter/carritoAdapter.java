@@ -116,7 +116,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     cambiarReserva(user, v, id);
 
-                                    Toast.makeText(v.getContext(), "" + id, Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(v.getContext(), "" + id, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
@@ -143,7 +143,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                                     FirebaseUser user = mAuth.getCurrentUser();
                                     cambiarCesta(user, v, id);
 
-                                    Toast.makeText(v.getContext(), "" + id, Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(v.getContext(), "" + id, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
                                 Log.d(TAG, "Error getting documents: ", task.getException());
