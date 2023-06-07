@@ -148,11 +148,11 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                                             .into(detalleArticulo);
 
                                 }
-                                Toast.makeText(DetalleArticulo.this, "Log in correcto", Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(DetalleArticulo.this, "Log in correcto", Toast.LENGTH_SHORT).show();
                                 adapter.notifyDataSetChanged();
 
                             } else {
-                                Toast.makeText(DetalleArticulo.this, "Log in mal", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(DetalleArticulo.this, "No se encontró el artículo", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Log.d(TAG, "get failed with ", task.getException());

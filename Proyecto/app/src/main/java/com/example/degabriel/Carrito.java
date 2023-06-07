@@ -70,7 +70,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                             // Realiza las acciones necesarias
                         }*/
                         //Esto si va a una actividad
-                        Toast.makeText(Carrito.this, "He vuelto", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(Carrito.this, "He vuelto", Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -153,8 +153,8 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
     }
     public void irACarro(){
         Intent intent = new Intent(this, Carrito.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
     }
     public void irAMenu(){
         Intent intent = new Intent(this, Menu.class);
@@ -379,7 +379,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
     }
     public void modificarBolsos(ArrayList<String> bolsos, String uid){
         cesta = obtenerCesta(uid);
-        Toast.makeText(this, cesta.toString(), Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, cesta.toString(), Toast.LENGTH_SHORT).show();
         db.collection("Usuarios").document(uid)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

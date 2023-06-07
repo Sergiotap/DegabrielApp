@@ -84,7 +84,7 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
                             // Realiza las acciones necesarias
                         }*/
                         //Esto si va a una actividad
-                        Toast.makeText(Noticias.this, "He vuelto", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(Noticias.this, "He vuelto", Toast.LENGTH_SHORT).show();
 
                     }
                 });

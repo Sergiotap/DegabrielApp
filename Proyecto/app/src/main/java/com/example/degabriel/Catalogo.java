@@ -62,7 +62,7 @@ public class Catalogo extends AppCompatActivity implements catalogoAdapter.onIte
                             // Realiza las acciones necesarias
                         }*/
                         //Esto si va a una actividad
-                        Toast.makeText(Catalogo.this, "He vuelto", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(Catalogo.this, "He vuelto", Toast.LENGTH_SHORT).show();
 
                     }
                 });

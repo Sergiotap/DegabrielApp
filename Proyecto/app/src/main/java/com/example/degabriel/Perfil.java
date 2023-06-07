@@ -179,8 +179,8 @@ public class Perfil extends AppCompatActivity {
     }
     public void irAPerfil(){
         Intent intent = new Intent(this, Perfil.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+        finish();
     }
     public void irACarro(){
         Intent intent = new Intent(this, Carrito.class);
