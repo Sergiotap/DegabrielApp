@@ -319,9 +319,10 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                                     .update("Cesta", cesta)
                                     .addOnSuccessListener(aVoid -> {
                                         // El campo "cesta" se ha actualizado con éxito
-                                        Toast.makeText(v.getContext(), "Se ha eliminado el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
-                                        actualizarStockReserva(IDUsuario, IDBolso, v);
-                                    })
+                                        Toast.makeText(v.getContext(), "Se ha movido el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(v.getContext(), Carrito.class);
+                                        v.getContext().startActivity(intent);
+                                        ((Activity) v.getContext()).finish();                                    })
                                     .addOnFailureListener(e -> {
                                         // Error al actualizar el campo "cesta"
                                         Toast.makeText(v.getContext(), "No se ha eliminado el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
@@ -365,35 +366,5 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                         // Error al obtener el documento
                     });
         }
-        public void actualizarStockReserva(String IDUsuario, String IDBolso, View v){
-            db.collection("Bolsos").document(IDBolso)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            Long stock = (Long) documentSnapshot.get("Stock");
-                            stock--;
-                            Long finalStock = stock;
-                            db.collection("Bolsos").document(IDBolso)
-                                    .update("Stock", stock)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Toast.makeText(v.getContext(), "Se ha actualizado el stock", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(v.getContext(), Carrito.class);
-                                        v.getContext().startActivity(intent);
-                                        ((Activity) v.getContext()).finish();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // Error al actualizar el campo "cesta"
-                                        Toast.makeText(v.getContext(), "No se ha actualizado el stock", Toast.LENGTH_SHORT).show();
-                                    });
-                        }
-                        else {
-                            // El documento no existe
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Error al obtener el documento
-                    });
-        }
-
     }
 }
