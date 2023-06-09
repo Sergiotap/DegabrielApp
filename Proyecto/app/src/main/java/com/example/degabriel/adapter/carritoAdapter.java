@@ -182,27 +182,16 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                         })
                         .exceptionally(e -> {
                             // Manejar la excepción en caso de error
+                            Toast.makeText(v.getContext(), "Se ha producido un error", Toast.LENGTH_SHORT).show();
                             return null;
                         });
             } else {
                 Toast.makeText(v.getContext(), "No se puede reservar porque le faltan campos", Toast.LENGTH_SHORT).show();
             }
         }
-        public void cambiarCesta(FirebaseUser user, View v, String idBolso){
-            if (user != null) {
-                comprobarDatosVacios(user, v)
-                        .thenAccept(vacio -> {
-                            if (!vacio) {
-                                eliminar(idBolso, v);
-                            }
-                        })
-                        .exceptionally(e -> {
-                            // Manejar la excepción en caso de error
-                            return null;
-                        });
-            } else {
-                Toast.makeText(v.getContext(), "No se puede reservar porque le faltan campos", Toast.LENGTH_SHORT).show();
-            }
+        public void cambiarCesta(FirebaseUser user, View v, String idBolso)
+        {
+            eliminar(idBolso, v);
         }
         public CompletableFuture<Boolean> comprobarDatosVacios(FirebaseUser user, View v){
             CompletableFuture<Boolean> future = new CompletableFuture<>();
