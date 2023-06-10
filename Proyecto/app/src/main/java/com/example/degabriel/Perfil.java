@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,12 +28,14 @@ public class Perfil extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> launcher;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    EditText nombre, apellidos, correo, direccion, telefono;
+    private EditText nombre, apellidos, correo, direccion, telefono;
     private ImageView perfilMenu,perfilCart,perfilPerfil;
-    Button guardar;
-    TextView cerrarSesion;
-    boolean suscrito;
-    ArrayList<String> bolsos, cesta;
+    private Button guardar;
+    private TextView cerrarSesion, terms, envios;
+    private boolean suscrito;
+    private String urlTerms="https://www.degabriel-official.com/terminos-y-condiciones/";
+    private String urlEnvio="https://www.degabriel-official.com/envios-y-devoluciones/";
+    private ArrayList<String> bolsos, cesta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,20 @@ public class Perfil extends AppCompatActivity {
         perfilPerfil.setOnClickListener(view -> {
             comprobarLoginPerfil();
         });
+        terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlTerms));
+                startActivity(intent);
+            }
+        });
+        envios.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlEnvio));
+                startActivity(intent);
+            }
+        });
         launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -92,7 +109,8 @@ public class Perfil extends AppCompatActivity {
         perfilMenu=findViewById(R.id.imageMenuPerfil);
         perfilPerfil=findViewById(R.id.imagePerfilPerfil);
         perfilCart=findViewById(R.id.imagePerfilCart);
-        //perfilMenu=findViewById()
+        terms=findViewById(R.id.TerminosyCondiciones);
+        envios=findViewById(R.id.EnviosyDevoluciones);
     }
     public void obtenerUsuario(){
         //Toast.makeText(this, mAuth.getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();

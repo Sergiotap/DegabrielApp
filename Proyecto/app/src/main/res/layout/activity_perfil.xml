@@ -115,7 +115,7 @@
             android:textColor="#FFFFFF" />
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/TerminosyCondiciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Términos y condiciones"
@@ -124,7 +124,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/EnviosyDevoluciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Envíos y devoluciones"
