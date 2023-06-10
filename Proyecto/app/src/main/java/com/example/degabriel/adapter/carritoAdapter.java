@@ -96,7 +96,6 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
             carritoModelo = itemView.findViewById(R.id.carritoModelo);
             carritoPrecio = itemView.findViewById(R.id.carritoPrecio);
             carritoImagen = itemView.findViewById(R.id.carritoImagen);
-            //Estos son 2 que tienen click, queda pendiente ver cómo funcionan
             carritoQuitar = itemView.findViewById(R.id.carritoQuitar);
             carritoReservar = itemView.findViewById(R.id.carritoConfirmar);
             carritoReservar.setOnClickListener(new View.OnClickListener() {
@@ -280,7 +279,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                                     .addOnSuccessListener(aVoid -> {
                                         // El campo "cesta" se ha actualizado con éxito
                                         Toast.makeText(v.getContext(), "Se ha eliminado el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
-                                        actualizarStock(IDUsuario, IDBolso, v);
+                                        actualizarStock(IDBolso, v);
                                     })
                                     .addOnFailureListener(e -> {
                                         // Error al actualizar el campo "cesta"
@@ -326,7 +325,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                         // Error al obtener el documento
                     });
         }
-        public void actualizarStock(String IDUsuario, String IDBolso, View v){
+        public void actualizarStock(String IDBolso, View v){
             db.collection("Bolsos").document(IDBolso)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
