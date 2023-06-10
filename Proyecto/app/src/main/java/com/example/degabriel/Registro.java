@@ -29,11 +29,10 @@ public class Registro extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    EditText correo, correo2, contrasenia, contrasenia2;
-    CheckBox unirse;
-    Button registro;
-
-    TextView iniciarSesion;
+    private EditText correo, correo2, contrasenia, contrasenia2;
+    private CheckBox unirse;
+    private Button registro;
+    private TextView iniciarSesion;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +61,6 @@ public class Registro extends AppCompatActivity {
         unirse=findViewById(R.id.RegistroUnirse);
         registro=findViewById(R.id.RegistroBoton);
         iniciarSesion=findViewById(R.id.RegistroIniciar);
-
     }
 
     public void comprobardatos(){
@@ -124,6 +122,7 @@ public class Registro extends AppCompatActivity {
     public void irAPrincipal(){
         Intent intent = new Intent(this, Menu.class);
         startActivity(intent);
+        finish();
     }
     public void addUsuario(String uid, String email){
         Map<String, Object> userData = new HashMap<>();
@@ -142,7 +141,6 @@ public class Registro extends AppCompatActivity {
                     Toast.makeText(Registro.this,"Se ha añadido el usuario", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    // Manejar errores aquí
                     Toast.makeText(Registro.this,"No se ha añadido el usuario", Toast.LENGTH_SHORT).show();
                 });
     }

@@ -25,9 +25,9 @@ import com.google.firebase.auth.FirebaseAuth;
 public class Login extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> launcher;
-    EditText loginCorreo, loginPassword;
-    Button botonLogin;
-    TextView registro;
+    private EditText loginCorreo, loginPassword;
+    private Button botonLogin;
+    private TextView registro;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
@@ -91,7 +91,6 @@ public class Login extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Toast.makeText(Login.this, "Log in correcto", Toast.LENGTH_SHORT).show();
                             irAPrincipal();
-                            //FirebaseUser user = mAuth.getCurrentUser();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(Login.this, "Las credenciales introducidas no coinciden", Toast.LENGTH_SHORT).show();
