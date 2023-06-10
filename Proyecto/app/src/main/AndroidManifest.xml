@@ -18,8 +18,7 @@
         tools:targetApi="31">
         <activity
             android:name=".WelcomeActivity"
-            android:exported="true"
-            android:theme="@style/carga">
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
