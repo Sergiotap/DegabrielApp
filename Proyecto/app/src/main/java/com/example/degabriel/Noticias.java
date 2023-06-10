@@ -246,13 +246,5 @@ public class Noticias extends AppCompatActivity implements noticiasAdapter.onIte
         public Map<String, Object> getData() {
             return data;
         }
-
-        public void setDate(Date date) {
-            this.date = date;
-        }
-        public String getDateString() {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            return sdf.format(date);
-        }
     }
 }
