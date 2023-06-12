@@ -95,23 +95,54 @@ public class Registro extends AppCompatActivity {
     }
     public void  registrar(String email, String password){
         mAuth=FirebaseAuth.getInstance();
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Toast.makeText(Registro.this, "Usuario creado con éxito", Toast.LENGTH_SHORT).show();
-                            String uid = mAuth.getCurrentUser().getUid();
-                            addUsuario(uid, email);
+        if (isValidPassword(password)){
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Toast.makeText(Registro.this, "Usuario creado con éxito", Toast.LENGTH_SHORT).show();
+                                String uid = mAuth.getCurrentUser().getUid();
+                                addUsuario(uid, email);
 
-                            irAPrincipal();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(Registro.this, "Se ha fallado en la creación del usuario", Toast.LENGTH_SHORT).show();
+                                irAPrincipal();
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(Registro.this, "Se ha fallado en la creación del usuario", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                });
+                    });
+        }
+        else {
+            Toast.makeText(Registro.this, "La contraseña debe contener entre 8 y 30 caracteres y números y letras", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    private boolean isValidPassword(String password) {
+        // Verificar la longitud de la contraseña
+        if (password.length() < 8 || password.length() > 30) {
+            return false;
+        }
+
+        // Verificar si la contraseña contiene al menos una letra y un número
+        boolean hasLetter = false;
+        boolean hasNumber = false;
+
+        for (char c : password.toCharArray()) {
+            if (Character.isLetter(c)) {
+                hasLetter = true;
+            } else if (Character.isDigit(c)) {
+                hasNumber = true;
+            }
+
+            // Si ya encontramos una letra y un número, podemos salir del bucle
+            if (hasLetter && hasNumber) {
+                break;
+            }
+        }
+
+        return hasLetter && hasNumber;
     }
     public void irALogin(){
         Intent intent = new Intent(this, Login.class);
