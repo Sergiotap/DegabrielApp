@@ -244,7 +244,12 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     if (documentSnapshot.exists()) {
                         // El documento existe, se ha obtenido con éxito
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
-                        eliminarElementosCesta(uid);
+                        if (cesta.isEmpty()){
+                            Toast.makeText(this, "La cesta está vacía", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            eliminarElementosCesta(uid);
+                        }
                         // Acceder a los datos del documento
                         // ...
                     } else {
@@ -344,7 +349,12 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                         // El documento existe, se ha obtenido con éxito
                         bolsos = (ArrayList<String>) documentSnapshot.get("Bolsos");
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
-                        actualizarBolsos(uid);
+                        if (cesta.isEmpty()){
+                            Toast.makeText(this, "La cesta está vacía", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            actualizarBolsos(uid);
+                        }
                         //actualizarCesta(uid);
                         // Acceder a los datos del documento
                         // ...

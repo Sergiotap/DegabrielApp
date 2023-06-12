@@ -13,8 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class DetalleArticulo extends AppCompatActivity  implements detalleArticuloAdapter.onItemClickListener{
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private FirebaseAuth mAuth=FirebaseAuth.getInstance();
-    private ImageView detalleMenu, detalleCart, detalleUser,detalleArticulo;
+    private ImageView detalleMenu, detalleCart, detalleUser, detalleArticuloImagen;
     private TextView detalleNombre,detalledescrpcion,detalleprecio, detalleStock;
     private Button detalleCestaanadir, detalleReserva;
     private ActivityResultLauncher<Intent> launcher;
@@ -47,7 +53,8 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
     private detalleArticuloAdapter adapter;
     private List<String> Imagenes= new ArrayList<>();
     private ArrayList<String> cesta, reservas;
-    private String ID;
+    private String ID, http="", imagen="";
+    ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +66,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
         detalleNombre=findViewById(R.id.detalleArticuloNombre);
         detalledescrpcion=findViewById(R.id.detalleArticuloDescripcion);
         detalleprecio=findViewById(R.id.detalleArticuloPrecio);
-        detalleArticulo=findViewById(R.id.detalleArticulo);
+        detalleArticuloImagen =findViewById(R.id.detalleArticulo);
         detalleStock=findViewById(R.id.detalleArticuloStock);
         detalleCestaanadir =findViewById(R.id.detalleArticuloAnadir);
         detalleReserva=findViewById(R.id.detalleArticuloReservar);
@@ -111,6 +118,12 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
         detalleUser.setOnClickListener(view -> {
             comprobarLoginPerfil();
         });
+        detalleArticuloImagen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                envio(imagen);
+            }
+        });
     }
     private void readDataFromFirestore(String ID) {
         db.collection("Bolsos").document(ID)
@@ -141,11 +154,12 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
 
                                     // Obtenga la URL de la primera imagen del arreglo
                                     String firstImageUrl = imageUrls.get(0);
+                                    imagen=firstImageUrl;
 
                                     // Utilice Glide para cargar la imagen en el ImageView
                                     Glide.with(DetalleArticulo.this)
                                             .load(firstImageUrl)
-                                            .into(detalleArticulo);
+                                            .into(detalleArticuloImagen);
 
                                 }
                                 //Toast.makeText(DetalleArticulo.this, "Log in correcto", Toast.LENGTH_SHORT).show();
@@ -167,12 +181,12 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
 
         cambiarImagen(imagen);
     }
-    public void cambiarImagen(String imagen){
-
+    public void cambiarImagen(String imagenCambiar){
+        imagen=imagenCambiar;
         // Utilice Glide para cargar la imagen en el ImageView
         Glide.with(DetalleArticulo.this)
-                .load(imagen)
-                .into(detalleArticulo);
+                .load(imagenCambiar)
+                .into(detalleArticuloImagen);
     }
     public void comprobarUsuarioCesta() {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -409,6 +423,11 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                     // Error al obtener el documento
                     callback.onStockObtained(stockRecibido);
                 });
+    }
+    public void envio(String ID) {
+        Intent intent = new Intent(this, FotosArticulo.class);
+        intent.putExtra("http",ID);
+        startActivity(intent);
     }
 
     public interface StockCallback {
