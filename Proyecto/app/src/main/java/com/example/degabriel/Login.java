@@ -78,10 +78,10 @@ public class Login extends AppCompatActivity {
             Toast.makeText(this, "Hay campos vacíos", Toast.LENGTH_SHORT).show();
         }
         else {
-            Iniciar(email, pass);
+            iniciar(email, pass);
         }
     }
-    public void Iniciar(String email, String pass){
+    public void iniciar(String email, String pass){
         mAuth=FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

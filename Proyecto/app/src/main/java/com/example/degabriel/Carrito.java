@@ -366,7 +366,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     if (documentSnapshot.exists()) {
                         // El documento existe, se ha obtenido con éxito
                         bolsos = (ArrayList<String>) documentSnapshot.get("Bolsos");
-                        modificarBolsos(bolsos, uid);
+                        modificarBolsos(uid);
                         // Acceder a los datos del documento
                         // ...
                     } else {
@@ -377,7 +377,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     // Error al obtener el documento
                 });
     }
-    public void modificarBolsos(ArrayList<String> bolsos, String uid){
+    public void modificarBolsos(String uid){
         cesta = obtenerCesta(uid);
         //Toast.makeText(this, cesta.toString(), Toast.LENGTH_SHORT).show();
         db.collection("Usuarios").document(uid)

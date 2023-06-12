@@ -13,18 +13,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.degabriel.Carrito;
-import com.example.degabriel.DetalleArticulo;
-import com.example.degabriel.Login;
-import com.example.degabriel.Menu;
 import com.example.degabriel.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoViewHolder>{
     private List<Map<String, Object>> data;
@@ -190,7 +182,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
         }
         public void cambiarCesta(FirebaseUser user, View v, String idBolso)
         {
-            eliminar(idBolso, v);
+            eliminar(user, idBolso, v);
         }
         public CompletableFuture<Boolean> comprobarDatosVacios(FirebaseUser user, View v){
             CompletableFuture<Boolean> future = new CompletableFuture<>();
@@ -199,7 +191,6 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                     .get()
                     .addOnSuccessListener(documentSnapshot ->  {
                         if (documentSnapshot.exists()) {
-                            // El documento existe, se ha obtenido con éxito
                             String nombreObtenido=documentSnapshot.getString("Nombre");
                             String apellidosObtenido=documentSnapshot.getString("Apellidos");
                             String direccionObtenido=documentSnapshot.getString("Direccion");
@@ -212,15 +203,11 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                                 vacio = false;
                             }
                             future.complete(vacio);
-                            // Acceder a los datos del documento
-                            // ...
                         } else {
-                            // El documento no existe
                             future.complete(false);
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Error al obtener el documento
                     });
             return future;
         }
@@ -229,8 +216,7 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
             String IDUsuario = user.getUid();
             actualizarBolsos(IDUsuario, IDBolso, v);
         }
-        public void eliminar(String IDBolso, View v){
-            FirebaseUser user = mAuth.getCurrentUser();
+        public void eliminar(FirebaseUser user, String IDBolso, View v){
             String IDUsuario = user.getUid();
             actualizarCesta(IDUsuario, IDBolso, v);
         }
@@ -241,29 +227,22 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // El documento existe, se ha obtenido con éxito
                             reservas = (ArrayList<String>) documentSnapshot.get("Bolsos");
                             reservas.add(IDBolso);
-                            //Se debería preguntar al usuario si desea reservar, en un futuro se hará un pop up para que lo vea el usuario
                             db.collection("Usuarios").document(IDUsuario)
                                     .update("Bolsos", reservas)
                                     .addOnSuccessListener(aVoid -> {
-                                        // El campo "cesta" se ha actualizado con éxito
                                         actualizarCestaReserva(IDUsuario, IDBolso, v);
                                         Toast.makeText(v.getContext(), "Se ha añadido el bolso a las reservas del usuario", Toast.LENGTH_SHORT).show();
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Error al actualizar el campo "cesta"
                                         Toast.makeText(v.getContext(), "No se ha añadido el bolso a las reservas del usuario", Toast.LENGTH_SHORT).show();
                                     });
-                            // Acceder a los datos del documento
-                            // ...
                         } else {
-                            // El documento no existe
+                            Toast.makeText(v.getContext(), "No existe el bolso", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Error al obtener el documento
                     });
         }
         public void actualizarCesta(String IDUsuario, String IDBolso, View v){
@@ -271,28 +250,22 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // El documento existe, se ha obtenido con éxito
                             cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                             cesta.remove(IDBolso);
                             db.collection("Usuarios").document(IDUsuario)
                                     .update("Cesta", cesta)
                                     .addOnSuccessListener(aVoid -> {
-                                        // El campo "cesta" se ha actualizado con éxito
                                         Toast.makeText(v.getContext(), "Se ha eliminado el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
                                         actualizarStock(IDBolso, v);
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Error al actualizar el campo "cesta"
                                         Toast.makeText(v.getContext(), "No se ha eliminado el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
                                     });
-                            // Acceder a los datos del documento
-                            // ...
                         } else {
-                            // El documento no existe
+                            Toast.makeText(v.getContext(), "No existe el bolso", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Error al obtener el documento
                     });
         }
         public void actualizarCestaReserva(String IDUsuario, String IDBolso, View v){
@@ -300,29 +273,23 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            // El documento existe, se ha obtenido con éxito
                             cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                             cesta.remove(IDBolso);
                             db.collection("Usuarios").document(IDUsuario)
                                     .update("Cesta", cesta)
                                     .addOnSuccessListener(aVoid -> {
-                                        // El campo "cesta" se ha actualizado con éxito
                                         Toast.makeText(v.getContext(), "Se ha movido el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(v.getContext(), Carrito.class);
                                         v.getContext().startActivity(intent);
                                         ((Activity) v.getContext()).finish();                                    })
                                     .addOnFailureListener(e -> {
-                                        // Error al actualizar el campo "cesta"
                                         Toast.makeText(v.getContext(), "No se ha eliminado el bolso de la cesta del usuario", Toast.LENGTH_SHORT).show();
                                     });
-                            // Acceder a los datos del documento
-                            // ...
                         } else {
-                            // El documento no existe
+                            Toast.makeText(v.getContext(), "No existe el bolso", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Error al obtener el documento
                     });
         }
         public void actualizarStock(String IDBolso, View v){
@@ -332,7 +299,6 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                         if (documentSnapshot.exists()) {
                             Long stock = (Long) documentSnapshot.get("Stock");
                             stock++;
-                            Long finalStock = stock;
                             db.collection("Bolsos").document(IDBolso)
                                     .update("Stock", stock)
                                     .addOnSuccessListener(aVoid -> {
@@ -342,16 +308,13 @@ public class carritoAdapter extends RecyclerView.Adapter<carritoAdapter.carritoV
                                         ((Activity) v.getContext()).finish();
                                     })
                                     .addOnFailureListener(e -> {
-                                        // Error al actualizar el campo "cesta"
                                         Toast.makeText(v.getContext(), "No se ha actualizado el stock", Toast.LENGTH_SHORT).show();
                                     });
                         }
                         else {
-                            // El documento no existe
                         }
                     })
                     .addOnFailureListener(e -> {
-                        // Error al obtener el documento
                     });
         }
     }
