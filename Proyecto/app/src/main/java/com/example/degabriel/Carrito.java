@@ -35,8 +35,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Carrito extends AppCompatActivity implements carritoAdapter.onItemClickListener{
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -262,12 +264,14 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
     }
     public void eliminarElementosCesta(String uid) {
         if (cesta != null && !cesta.isEmpty()) {
+            Map<String, Integer> bolsosCantidad = new HashMap<>(); // Mapa para almacenar los IDs de los bolsos y su cantidad en la cesta
+
             for (String bolsosRef : cesta) {
                 // Obtener el ID del documento de bolsos a partir de la referencia almacenada en el ArrayList
                 String bolsosId = bolsosRef.substring(bolsosRef.lastIndexOf("/") + 1);
 
-                // Actualizar el campo "stock" en la colección "bolsos"
-                actualizarStock(bolsosId);
+                // Incrementar la cantidad de veces que aparece el bolso en la cesta
+                bolsosCantidad.put(bolsosId, bolsosCantidad.getOrDefault(bolsosId, 0) + 1);
 
                 // Eliminar el elemento de la cesta en la colección "Usuarios"
                 db.collection("Usuarios").document(uid)
@@ -280,33 +284,44 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                         });
             }
 
+            // Actualizar el campo "stock" en la colección "bolsos" para todos los IDs únicos y su cantidad correspondiente
+            for (Map.Entry<String, Integer> entry : bolsosCantidad.entrySet()) {
+                String bolsosId = entry.getKey();
+                int cantidad = entry.getValue();
+
+                for (int i = 0; i < cantidad; i++) {
+                    actualizarStock(bolsosId, cantidad);
+                }
+            }
+
             // Limpiar la lista de cesta después de eliminar los elementos
             cesta.clear();
 
             // Redireccionar a la actividad Carrito
         }
     }
-    public void actualizarStock(String IDBolso){
+
+
+
+    public void actualizarStock(String IDBolso, int cantidad) {
         db.collection("Bolsos").document(IDBolso)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Long stock = (Long) documentSnapshot.get("Stock");
-                        stock++;
+                        stock += cantidad;
                         db.collection("Bolsos").document(IDBolso)
                                 .update("Stock", stock)
                                 .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Se ha actualizado el stock", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(Carrito.this, Carrito.class);
-                                    startActivity(intent);
+                                    Intent inteent = new Intent(this, Carrito.class);
+                                    startActivity(inteent);
                                     finish();
+                                    // Éxito en la actualización del stock
                                 })
                                 .addOnFailureListener(e -> {
-                                    // Error al actualizar el campo "cesta"
-                                    Toast.makeText(this, "No se ha actualizado el stock", Toast.LENGTH_SHORT).show();
+                                    // Error al actualizar el campo "Stock"
                                 });
-                    }
-                    else {
+                    } else {
                         // El documento no existe
                     }
                 })
@@ -314,6 +329,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     // Error al obtener el documento
                 });
     }
+
 
 
     public void actualizarCesta(String uid){

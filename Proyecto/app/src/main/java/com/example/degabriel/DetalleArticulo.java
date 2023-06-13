@@ -251,13 +251,11 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
             @Override
             public void onStockObtained(AtomicReference<Long> stock) {
                 Long stockValue = stock.get(); // Obtener el valor actual del AtomicReference
-                Long stockVirtual=stockValue;
-                if (stockVirtual != null && stockVirtual > 0) {
+                if (stockValue != null && stockValue > 0) {
                     FirebaseUser user = mAuth.getCurrentUser();
                     String IDUsuario = user.getUid();
                     String IDBolso = getIntent().getStringExtra("ID");
                     actualizarCesta(IDUsuario, IDBolso);
-                    stockVirtual--;
                 } else {
                     Toast.makeText(getApplicationContext(), "No hay stock suficiente de este bolso", Toast.LENGTH_SHORT).show();
                 }
@@ -290,12 +288,12 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                         // El documento existe, se ha obtenido con éxito
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                         cesta.add(IDBolso);
+                        actualizarStock(IDBolso);
                         db.collection("Usuarios").document(IDUsuario)
                                 .update("Cesta", cesta)
                                 .addOnSuccessListener(aVoid -> {
                                     // El campo "cesta" se ha actualizado con éxito
                                     //Se queda pendiente revisar que el stock no se actualice al añadir a la cesta, si no al confirmar la reserva.
-                                    actualizarStock(IDBolso);
                                     Toast.makeText(this, "Se ha añadido el bolso a la cesta del usuario", Toast.LENGTH_SHORT).show();
                                 })
                                 .addOnFailureListener(e -> {
