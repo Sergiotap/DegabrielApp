@@ -18,6 +18,7 @@
         tools:targetApi="31">
         <activity
             android:name=".WelcomeActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
@@ -30,6 +31,7 @@
         </activity>
         <activity
             android:name=".FotosArticulo"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -37,6 +39,7 @@
         </activity>
         <activity
             android:name=".DetalleArticulo"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -44,6 +47,7 @@
         </activity>
         <activity
             android:name=".Expression"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -51,6 +55,7 @@
         </activity>
         <activity
             android:name=".Catalogo"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -58,6 +63,7 @@
         </activity>
         <activity
             android:name=".Carrito"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -65,6 +71,7 @@
         </activity>
         <activity
             android:name=".Perfil"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -72,6 +79,7 @@
         </activity>
         <activity
             android:name=".Noticias"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -79,6 +87,7 @@
         </activity>
         <activity
             android:name=".Menu"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -86,6 +95,7 @@
         </activity>
         <activity
             android:name=".Registro"
+            android:screenOrientation="portrait"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -93,6 +103,7 @@
         </activity>
         <activity
             android:name=".Login"
+            android:screenOrientation="portrait"
             android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
