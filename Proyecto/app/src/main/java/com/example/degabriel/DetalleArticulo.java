@@ -101,9 +101,11 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
 
         adapter.setOnItemClickListener(this);
         detalleCestaanadir.setOnClickListener(view ->{
+            detalleCestaanadir.setEnabled(false);
             comprobarUsuarioCesta();
         });
         detalleReserva.setOnClickListener(view ->{
+            detalleReserva.setEnabled(false);
             comprobarUsuarioReserva();
         });
 
@@ -258,6 +260,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                     actualizarCesta(IDUsuario, IDBolso);
                 } else {
                     Toast.makeText(getApplicationContext(), "No hay stock suficiente de este bolso", Toast.LENGTH_SHORT).show();
+                    detalleCestaanadir.setEnabled(true);
                 }
             }
         });
@@ -276,6 +279,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                     actualizarBolsos(IDUsuario, IDBolso);
                 } else {
                     Toast.makeText(getApplicationContext(), "No hay stock suficiente de este bolso", Toast.LENGTH_SHORT).show();
+                    detalleReserva.setEnabled(true);
                 }
             }
         });
@@ -289,12 +293,14 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                         cesta.add(IDBolso);
                         actualizarStock(IDBolso);
+
                         db.collection("Usuarios").document(IDUsuario)
                                 .update("Cesta", cesta)
                                 .addOnSuccessListener(aVoid -> {
                                     // El campo "cesta" se ha actualizado con éxito
                                     //Se queda pendiente revisar que el stock no se actualice al añadir a la cesta, si no al confirmar la reserva.
                                     Toast.makeText(this, "Se ha añadido el bolso a la cesta del usuario", Toast.LENGTH_SHORT).show();
+                                    detalleCestaanadir.setEnabled(true);
                                 })
                                 .addOnFailureListener(e -> {
                                     // Error al actualizar el campo "cesta"
@@ -318,13 +324,14 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                         // El documento existe, se ha obtenido con éxito
                         reservas = (ArrayList<String>) documentSnapshot.get("Bolsos");
                         reservas.add(IDBolso);
+                        actualizarStock(IDBolso);
                         //Se debería preguntar al usuario si desea reservar, en un futuro se hará un pop up para que lo vea el usuario
                         db.collection("Usuarios").document(IDUsuario)
                                 .update("Bolsos", reservas)
                                 .addOnSuccessListener(aVoid -> {
                                     // El campo "Bolsos" se ha actualizado con éxito
-                                    actualizarStock(IDBolso);
                                     Toast.makeText(this, "Se ha añadido el bolso a las reservas del usuario", Toast.LENGTH_SHORT).show();
+                                    detalleReserva.setEnabled(true);
                                 })
                                 .addOnFailureListener(e -> {
                                     // Error al actualizar el campo "cesta"
