@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class Carrito extends AppCompatActivity implements carritoAdapter.onItemClickListener{
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -91,7 +92,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
         reservarTodos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reservarTodo();
+                comprobarUsuarioReserva();
             }
         });
         cancelarTodos.setOnClickListener(new View.OnClickListener() {
@@ -355,6 +356,55 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     }
                 });
 
+    }
+    public CompletableFuture<Boolean> comprobarDatosVacios(FirebaseUser user){
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        String uid = mAuth.getCurrentUser().getUid();
+        db.collection("Usuarios").document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot ->  {
+                    if (documentSnapshot.exists()) {
+                        // El documento existe, se ha obtenido con éxito
+                        String nombreObtenido=documentSnapshot.getString("Nombre");
+                        String apellidosObtenido=documentSnapshot.getString("Apellidos");
+                        String direccionObtenido=documentSnapshot.getString("Direccion");
+                        String telefonoObtenido=documentSnapshot.getString("Telefono");
+                        boolean vacio;
+                        if (nombreObtenido.isEmpty() || apellidosObtenido.isEmpty() || direccionObtenido.isEmpty() || telefonoObtenido.isEmpty()) {
+                            Toast.makeText(this, "No se puede tener reservas en un usuario al que le faltan datos", Toast.LENGTH_SHORT).show();
+                            vacio = true;
+                        } else {
+                            vacio = false;
+                        }
+                        future.complete(vacio);
+                        // Acceder a los datos del documento
+                        // ...
+                    } else {
+                        // El documento no existe
+                        future.complete(false);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Error al obtener el documento
+                });
+        return future;
+    }
+    public void comprobarUsuarioReserva(){
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            comprobarDatosVacios(user)
+                    .thenAccept(vacio -> {
+                        if (!vacio) {
+                            reservarTodo();
+                        }
+                    })
+                    .exceptionally(e -> {
+                        // Manejar la excepción en caso de error
+                        return null;
+                    });
+        } else {
+            irALogin();
+        }
     }
     public void anadirABolsos(){
         String uid = mAuth.getCurrentUser().getUid();
