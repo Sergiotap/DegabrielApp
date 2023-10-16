@@ -43,6 +43,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class Carrito extends AppCompatActivity implements carritoAdapter.onItemClickListener{
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public PopUp popUp= new PopUp();
     private List<String> documentId=new ArrayList<>();
     private FirebaseAuth mAuth;
     private ActivityResultLauncher<Intent> launcher;
@@ -92,13 +93,13 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
         reservarTodos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                comprobarUsuarioReserva();
+                comprobarUsuarioReserva(v);
             }
         });
         cancelarTodos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                quitarTodo();
+                quitarTodo(v);
             }
         });
     }
@@ -221,25 +222,25 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
         startActivity(intent);
 
     }
-    public void quitarTodo(){
+    public void quitarTodo(View v){
         FirebaseUser user = mAuth.getCurrentUser();
         if (user!=null){
-            eliminar();
+            eliminar(v);
         }
         else {
             irALogin();
         }
     }
-    public void reservarTodo(){
+    public void reservarTodo(View v){
         FirebaseUser user = mAuth.getCurrentUser();
         if (user!=null){
-            anadirABolsos();
+            anadirABolsos(v);
         }
         else {
             irALogin();
         }
     }
-    public void eliminar() {
+    public void eliminar(View v) {
         String uid = mAuth.getCurrentUser().getUid();
         db.collection("Usuarios").document(uid)
                 .get()
@@ -248,10 +249,10 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                         // El documento existe, se ha obtenido con éxito
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                         if (cesta.isEmpty()){
-                            Toast.makeText(this, "La cesta está vacía", Toast.LENGTH_SHORT).show();
+                            popUp.mostrarMensaje("La cesta está vacía", v);
                         }
                         else {
-                            eliminarElementosCesta(uid);
+                            eliminarElementosCesta(uid, v);
                         }
                         // Acceder a los datos del documento
                         // ...
@@ -263,7 +264,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     // Error al obtener el documento
                 });
     }
-    public void eliminarElementosCesta(String uid) {
+    public void eliminarElementosCesta(String uid, View v) {
         if (cesta != null && !cesta.isEmpty()) {
             Map<String, Integer> bolsosCantidad = new HashMap<>(); // Mapa para almacenar los IDs de los bolsos y su cantidad en la cesta
 
@@ -333,7 +334,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
 
 
 
-    public void actualizarCesta(String uid){
+    public void actualizarCesta(String uid, View v){
         Map<String, Object> updateData = new HashMap<>();
         cesta=new ArrayList<>();
         updateData.put("Cesta", cesta); // cesta es el nuevo valor que deseas asignar
@@ -343,7 +344,6 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(getApplicationContext(), "Se ha modificado la cesta del usuario", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Carrito.this, Carrito.class);
                         startActivity(intent);
                         finish();
@@ -357,7 +357,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                 });
 
     }
-    public CompletableFuture<Boolean> comprobarDatosVacios(FirebaseUser user){
+    public CompletableFuture<Boolean> comprobarDatosVacios(View v){
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         String uid = mAuth.getCurrentUser().getUid();
         db.collection("Usuarios").document(uid)
@@ -389,13 +389,13 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                 });
         return future;
     }
-    public void comprobarUsuarioReserva(){
+    public void comprobarUsuarioReserva(View v){
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            comprobarDatosVacios(user)
+            comprobarDatosVacios(v)
                     .thenAccept(vacio -> {
                         if (!vacio) {
-                            reservarTodo();
+                            reservarTodo(v);
                         }
                     })
                     .exceptionally(e -> {
@@ -406,7 +406,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
             irALogin();
         }
     }
-    public void anadirABolsos(){
+    public void anadirABolsos(View v){
         String uid = mAuth.getCurrentUser().getUid();
         db.collection("Usuarios").document(uid)
                 .get()
@@ -416,10 +416,9 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                         bolsos = (ArrayList<String>) documentSnapshot.get("Bolsos");
                         cesta = (ArrayList<String>) documentSnapshot.get("Cesta");
                         if (cesta.isEmpty()){
-                            Toast.makeText(this, "La cesta está vacía", Toast.LENGTH_SHORT).show();
-                        }
+                            popUp.mostrarMensaje("La cesta está vacía", v);                        }
                         else {
-                            actualizarBolsos(uid);
+                            actualizarBolsos(uid, v);
                         }
                         //actualizarCesta(uid);
                         // Acceder a los datos del documento
@@ -432,17 +431,17 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     // Error al obtener el documento
                 });
     }
-    public void actualizarBolsos(String uid){
-        obtenerBolsos(uid);
+    public void actualizarBolsos(String uid, View v){
+        obtenerBolsos(uid, v);
     }
-    public void obtenerBolsos(String uid){
+    public void obtenerBolsos(String uid, View v){
         db.collection("Usuarios").document(uid)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         // El documento existe, se ha obtenido con éxito
                         bolsos = (ArrayList<String>) documentSnapshot.get("Bolsos");
-                        modificarBolsos(uid);
+                        modificarBolsos(uid, v);
                         // Acceder a los datos del documento
                         // ...
                     } else {
@@ -453,7 +452,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                     // Error al obtener el documento
                 });
     }
-    public void modificarBolsos(String uid){
+    public void modificarBolsos(String uid, View v){
         cesta = obtenerCesta(uid);
         //Toast.makeText(this, cesta.toString(), Toast.LENGTH_SHORT).show();
         db.collection("Usuarios").document(uid)
@@ -477,9 +476,7 @@ public class Carrito extends AppCompatActivity implements carritoAdapter.onItemC
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Toast.makeText(getApplicationContext(), "Se han modificado los bolsos del usuario", Toast.LENGTH_SHORT).show();
-                                        actualizarCesta(uid);
-
+                                        actualizarCesta(uid, v);
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {

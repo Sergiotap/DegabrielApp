@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -19,6 +21,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,6 +51,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
     private TextView detalleNombre,detalledescrpcion,detalleprecio, detalleStock;
     private Button detalleCestaanadir, detalleReserva;
     private ActivityResultLauncher<Intent> launcher;
+    public PopUp popUp= new PopUp();
 
     private RecyclerView recy;
     private detalleArticuloAdapter adapter;
@@ -102,11 +106,11 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
         adapter.setOnItemClickListener(this);
         detalleCestaanadir.setOnClickListener(view ->{
             detalleCestaanadir.setEnabled(false);
-            comprobarUsuarioCesta();
+            comprobarUsuarioCesta(view);
         });
         detalleReserva.setOnClickListener(view ->{
             detalleReserva.setEnabled(false);
-            comprobarUsuarioReserva();
+            comprobarUsuarioReserva(view);
         });
 
         detalleMenu.setOnClickListener(view -> {
@@ -146,7 +150,15 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                                 detalleNombre.setText(name);
                                 detalledescrpcion.setText(descrip);
                                 detalleprecio.setText(""+precio+" €");
-                                detalleStock.setText(""+stock);
+                                if (stock<1){
+                                    detalleStock.setText("No hay stock");
+                                    detalleCestaanadir.setEnabled(false);
+                                    detalleReserva.setEnabled(false);
+                                }
+                                else {
+                                    detalleStock.setText(""+stock);
+                                }
+
 
                                 List<String> imageUrls = (List<String>) data.get("Imagen");
                                 if (imageUrls != null && imageUrls.size() > 0) {
@@ -190,22 +202,22 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                 .load(imagenCambiar)
                 .into(detalleArticuloImagen);
     }
-    public void comprobarUsuarioCesta() {
+    public void comprobarUsuarioCesta(View v) {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
-            anadirACesta();
+            anadirACesta(v);
         } else {
             irALogin();
         }
     }
 
-    public void comprobarUsuarioReserva(){
+    public void comprobarUsuarioReserva(View v){
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
             comprobarDatosVacios(user)
                     .thenAccept(vacio -> {
                         if (!vacio) {
-                            reservar();
+                            reservar(v);
                         }
                     })
                     .exceptionally(e -> {
@@ -248,24 +260,26 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                 });
         return future;
     }
-    public void anadirACesta(){
+    public void anadirACesta(View v){
         obtenerStock(ID, new StockCallback() {
             @Override
             public void onStockObtained(AtomicReference<Long> stock) {
                 Long stockValue = stock.get(); // Obtener el valor actual del AtomicReference
-                if (stockValue != null && stockValue > 0) {
+                if (stockValue != null && stockValue >= 1) {
                     FirebaseUser user = mAuth.getCurrentUser();
                     String IDUsuario = user.getUid();
                     String IDBolso = getIntent().getStringExtra("ID");
-                    actualizarCesta(IDUsuario, IDBolso);
+                    actualizarCesta(IDUsuario, IDBolso, v);
                 } else {
-                    Toast.makeText(getApplicationContext(), "No hay stock suficiente de este bolso", Toast.LENGTH_SHORT).show();
-                    detalleCestaanadir.setEnabled(true);
+                    detalleStock.setText("No hay stock");
+                    detalleCestaanadir.setEnabled(false);
+                    detalleReserva.setEnabled(false);
+                    //detalleCestaanadir.setEnabled(true);
                 }
             }
         });
     }
-    public void reservar() {
+    public void reservar(View v) {
         ID = getIntent().getStringExtra("ID");
         obtenerStock(ID, new StockCallback() {
             @Override
@@ -276,7 +290,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                     FirebaseUser user = mAuth.getCurrentUser();
                     String IDUsuario = user.getUid();
                     String IDBolso = getIntent().getStringExtra("ID");
-                    actualizarBolsos(IDUsuario, IDBolso);
+                    actualizarBolsos(IDUsuario, IDBolso, v);
                 } else {
                     Toast.makeText(getApplicationContext(), "No hay stock suficiente de este bolso", Toast.LENGTH_SHORT).show();
                     detalleReserva.setEnabled(true);
@@ -284,7 +298,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
             }
         });
     }
-    public void actualizarCesta(String IDUsuario, String IDBolso){
+    public void actualizarCesta(String IDUsuario, String IDBolso, View v){
         db.collection("Usuarios").document(IDUsuario)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -299,7 +313,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                                 .addOnSuccessListener(aVoid -> {
                                     // El campo "cesta" se ha actualizado con éxito
                                     //Se queda pendiente revisar que el stock no se actualice al añadir a la cesta, si no al confirmar la reserva.
-                                    Toast.makeText(this, "Se ha añadido el bolso a la cesta del usuario", Toast.LENGTH_SHORT).show();
+                                    popUp.mostrarMensaje("Añadido a la cesta", v);
                                     detalleCestaanadir.setEnabled(true);
                                 })
                                 .addOnFailureListener(e -> {
@@ -316,7 +330,7 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                     // Error al obtener el documento
                 });
     }
-    public void actualizarBolsos(String IDUsuario, String IDBolso){
+    public void actualizarBolsos(String IDUsuario, String IDBolso, View v){
         db.collection("Usuarios").document(IDUsuario)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -330,12 +344,13 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                                 .update("Bolsos", reservas)
                                 .addOnSuccessListener(aVoid -> {
                                     // El campo "Bolsos" se ha actualizado con éxito
-                                    Toast.makeText(this, "Se ha añadido el bolso a las reservas del usuario", Toast.LENGTH_SHORT).show();
+                                    popUp.mostrarMensaje("Producto reservado", v);
                                     detalleReserva.setEnabled(true);
                                 })
                                 .addOnFailureListener(e -> {
                                     // Error al actualizar el campo "cesta"
-                                    Toast.makeText(this, "No se ha añadido el bolso a las reservas del usuario", Toast.LENGTH_SHORT).show();
+                                    popUp.mostrarMensaje("Producto no reservado", v);
+                                    detalleReserva.setEnabled(true);
                                 });
                         // Acceder a los datos del documento
                         // ...
@@ -358,8 +373,14 @@ public class DetalleArticulo extends AppCompatActivity  implements detalleArticu
                         db.collection("Bolsos").document(IDBolso)
                                 .update("Stock", stock)
                                 .addOnSuccessListener(aVoid -> {
-                                    detalleStock.setText(String.valueOf(finalStock));                                    // El campo "cesta" se ha actualizado con éxito
-                                    Toast.makeText(this, "Se ha actualizado el stock", Toast.LENGTH_SHORT).show();
+                                    if (finalStock<1){
+                                        detalleStock.setText("No hay stock");
+                                        detalleCestaanadir.setEnabled(false);
+                                        detalleReserva.setEnabled(false);
+                                    }
+                                    else {
+                                        detalleStock.setText(String.valueOf(finalStock));
+                                    }
                                 })
                                 .addOnFailureListener(e -> {
                                     // Error al actualizar el campo "cesta"
